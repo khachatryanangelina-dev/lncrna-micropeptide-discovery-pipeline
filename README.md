@@ -1,103 +1,155 @@
 # lncRNA Micropeptide Discovery Pipeline
 
-Computational pipeline for identification, annotation and prioritization of putative micropeptide-encoding open reading frames (smORFs) within long non-coding RNA (lncRNA) transcripts expressed in human skeletal muscle.
+A reproducible bioinformatics workflow for the identification, annotation and prioritization of putative micropeptide-coding open reading frames (smORFs) within long non-coding RNA (lncRNA) transcripts expressed in human skeletal muscle.
 
 ---
 
-## Project Overview
+## Overview
 
-Long non-coding RNAs (lncRNAs) have traditionally been classified as non-protein-coding transcripts. However, growing evidence indicates that a subset of lncRNAs contains short open reading frames (smORFs) capable of producing biologically active micropeptides.
+Long non-coding RNAs (lncRNAs) are traditionally classified as non-protein-coding transcripts. Recent studies, however, have demonstrated that some lncRNAs contain short open reading frames (smORFs) capable of producing biologically active micropeptides involved in diverse cellular processes, including muscle development, regeneration and metabolic regulation.
 
-The discovery of such hidden coding potential remains challenging because micropeptides are typically:
+Because micropeptides are typically short, weakly conserved and frequently absent from reference protein annotations, their systematic discovery remains challenging.
 
-* shorter than conventional proteins;
-* poorly conserved across species;
-* frequently absent from reference protein annotations;
-* difficult to detect experimentally.
-
-This project implements a reproducible computational workflow designed to identify and prioritize candidate micropeptide-coding ORFs within skeletal muscle-expressed lncRNA transcripts.
+This project implements a reproducible computational pipeline designed to identify and prioritize candidate micropeptide-coding ORFs from skeletal muscle-expressed lncRNA transcripts using transcriptomic, sequence-derived and contextual features.
 
 ---
 
-## Research Objectives
+## Pipeline Highlights
 
-The primary objective of the study was to develop a reproducible bioinformatics pipeline for large-scale discovery of lncRNA-derived micropeptide candidates.
-
-The workflow was designed to:
-
-* identify skeletal muscle-expressed lncRNA transcripts;
-* detect candidate smORFs;
-* annotate sequence and transcript-context features;
-* construct a multidimensional candidate scoring framework;
-* prioritize the most biologically plausible micropeptide candidates for downstream validation.
-
----
-
-## Data Sources
-
-The analysis relies on publicly available resources:
-
-### GTEx v11
-
-Human transcriptomic expression profiles from skeletal muscle samples.
-
-### GENCODE v49
-
-Reference genome annotation and transcript sequence collection.
-
-These datasets are not distributed with the repository and must be downloaded independently.
+* Tissue-specific filtering of lncRNA transcripts using GTEx skeletal muscle expression data
+* Stop-to-stop ORF discovery using EMBOSS getorf
+* Comprehensive ORF annotation and feature extraction
+* Multi-level transcript-context analysis
+* Integrated candidate prioritization framework
+* External coding-potential validation using independent prediction tools
+* Fully script-based and reproducible workflow
 
 ---
 
 ## Computational Workflow
 
-### Stage 1 — Tissue-Specific lncRNA Selection
-
-Identification of lncRNA genes and transcripts expressed in human skeletal muscle based on GTEx expression profiles.
-
-### Stage 2 — ORF Discovery
-
-Detection of candidate open reading frames using EMBOSS `getorf`.
-
-### Stage 3 — ORF Annotation
-
-Computation of structural and sequence-derived features, including:
-
-* ORF length;
-* GC-content and GC3-content;
-* nucleotide complexity metrics;
-* codon composition statistics;
-* transcript-context characteristics;
-* overlap architecture.
-
-### Stage 4 — Candidate Prioritization
-
-Construction of an integrated scoring framework combining:
-
-* sequence integrity metrics;
-* nucleotide architecture;
-* transcript context;
-* overlap independence;
-* expression support;
-* peptide-derived properties.
-
-Candidates are ranked using the integrated micropeptide score.
+```text
+GTEx expression data + GENCODE annotation
+                    │
+                    ▼
+      Muscle-specific lncRNA filtering
+                    │
+                    ▼
+      Transcript sequence extraction
+                    │
+                    ▼
+      ORF discovery (EMBOSS getorf)
+                    │
+                    ▼
+           ORF annotation
+                    │
+                    ▼
+         Feature engineering
+                    │
+                    ▼
+  Integrated micropeptide scoring
+                    │
+                    ▼
+      Candidate prioritization
+                    │
+                    ▼
+    External coding-potential assessment
+```
 
 ---
 
-## Key Results
+## Data Sources
+
+The pipeline relies on publicly available reference resources:
+
+### GENCODE v49
+
+Reference human genome annotation and transcript sequences.
+
+### GTEx v11
+
+Transcriptomic expression profiles from human skeletal muscle samples.
+
+Input datasets are not distributed with this repository and must be downloaded independently from their respective providers.
+
+---
+
+## Methodology
+
+### 1. Tissue-Specific Transcript Selection
+
+The analysis begins with identification of lncRNA genes and transcripts expressed in skeletal muscle.
+
+A transcript is retained when expression satisfies:
+
+```text
+TPM > 1 in at least 10% of skeletal muscle samples
+```
+
+This step restricts the search space to biologically relevant transcripts while preserving low-abundance candidates that may still encode functional micropeptides.
+
+---
+
+### 2. ORF Discovery
+
+Candidate ORFs are detected using EMBOSS `getorf` in stop-to-stop mode.
+
+Unlike conventional protein-coding gene prediction approaches, this strategy does not require a canonical AUG start codon, allowing detection of potentially non-canonical translated smORFs.
+
+---
+
+### 3. ORF Annotation
+
+Each ORF is annotated using a broad collection of sequence-derived and contextual features, including:
+
+* ORF length
+* GC content and GC3 content
+* nucleotide complexity
+* codon usage statistics
+* transcript position
+* overlap architecture
+* transcript-level context
+* translated peptide properties
+
+---
+
+### 4. Feature Engineering and Candidate Ranking
+
+Candidate prioritization is performed using an integrated scoring framework that combines:
+
+* sequence integrity metrics
+* nucleotide architecture
+* ORF structural properties
+* transcript context
+* overlap independence
+* expression support
+* peptide-derived characteristics
+
+The resulting:
+
+```text
+integrated_micropeptide_score
+```
+
+is used to rank ORF candidates and generate representative candidate sets for downstream analysis.
+
+---
+
+## Results
 
 Application of the pipeline to human skeletal muscle transcriptomes produced:
 
-| Analysis stage                  | Result                             |
-| ------------------------------- | ---------------------------------- |
-| Muscle-expressed lncRNA genes   | 2,599                              |
-| Candidate lncRNA transcripts    | 2,322                              |
-| Detected ORF candidates         | 54,310                             |
-| Annotated ORF candidates        | 54,310                             |
-| Final prioritized candidate set | Top-ranked micropeptide candidates |
+| Metric                                     |              Value |
+| ------------------------------------------ | -----------------: |
+| Muscle-expressed lncRNA genes              |              2,599 |
+| Retained lncRNA transcripts                |              2,322 |
+| Detected ORF candidates                    |             54,310 |
+| Annotated ORF candidates                   |             54,310 |
+| Representative transcript-level candidates |              2,322 |
+| Representative gene-level candidates       |              1,314 |
+| Final prioritized candidate set            | Top 100 candidates |
 
-The resulting candidate collection represents a resource for future experimental validation and functional characterization of previously unannotated micropeptides.
+The resulting candidate collection represents a computationally prioritized resource for future experimental validation and biological characterization.
 
 ---
 
@@ -117,6 +169,11 @@ src/
         ├── annotate_orfs.py
         └── score_micropeptides.py
 
+results/
+├── 01_prepare/
+├── 02_getorf/
+└── ...
+
 pyproject.toml
 README.md
 ```
@@ -132,7 +189,7 @@ git clone https://github.com/khachatryanangelina-dev/lncrna-micropeptide-discove
 cd lncrna-micropeptide-discovery-pipeline
 ```
 
-Install dependencies:
+Install the package:
 
 ```bash
 pip install -e .
@@ -144,36 +201,40 @@ pip install -e .
 
 The repository contains the complete source code required to reproduce the computational workflow.
 
-To execute the pipeline, users must independently obtain:
+Users must independently obtain:
 
-* GTEx v11 expression matrices;
-* GENCODE v49 genome annotation;
-* GENCODE v49 transcript FASTA sequences.
+* GENCODE v49 annotation files
+* GENCODE v49 transcript FASTA sequences
+* GTEx v11 transcript expression matrices
 
-Pipeline parameters and file locations are configured through the project configuration files.
+Input paths and analysis parameters are configured through:
+
+```text
+configs/default.yaml
+```
 
 ---
 
 ## Limitations
 
-The presented workflow provides computational prioritization of candidate smORFs and does not constitute direct evidence of translation in vivo.
+The presented workflow provides computational prioritization rather than direct evidence of translation.
 
-Experimental validation approaches such as ribosome profiling, targeted proteomics, CRISPR-based perturbation studies, and reporter assays are required to confirm biological functionality.
+Candidate ORFs identified by the pipeline should be considered hypotheses requiring independent validation using approaches such as:
+
+* ribosome profiling (Ribo-seq)
+* targeted proteomics
+* epitope-tagging experiments
+* reporter assays
+* CRISPR-based perturbation studies
 
 ---
 
-
 ## Author
 
-Angelina Khachatryan
+**Angelina Khachatryan**
 
 Diploma Thesis Project
 
 2026
 
 ---
-
-## License
-
-MIT License
-
