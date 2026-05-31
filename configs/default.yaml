@@ -1,0 +1,48 @@
+paths:
+  gencode_gtf: ../data/raw/gencode.v49.primary_assembly.annotation.gtf.gz
+  gencode_transcripts_fasta: ../data/raw/gencode.v49.transcripts.fa.gz
+  gtex_gene_tpm: ../data/raw/gene_tpm_v11_muscle_skeletal.gct
+  gtex_transcript_tpm: ../data/raw/GTEx_Analysis_2025-08-22_v11_RSEMv1.3.3_transcripts_tpm.txt.gz
+
+stage_outputs:
+  prepare_dir: ../results/01_prepare
+  getorf_dir: ../results/02_getorf
+  annotate_dir: ../results/03_annotate
+  score_dir: ../results/04_score
+
+prepare:
+  tissue: "Muscle - Skeletal"
+
+  lncRNA_biotypes:
+    - lncRNA
+    - processed_transcript
+    - antisense
+    - sense_intronic
+    - sense_overlapping
+    - 3prime_overlapping_ncRNA
+    - non_coding
+    - bidirectional_promoter_lncRNA
+    - macro_lncRNA
+
+  gene_tpm_threshold: 1.0
+  gene_min_fraction: 0.10
+
+  transcript_median_tpm_min: 0.5
+  transcript_prevalence_min: 0.10
+
+  chunksize: 5000
+
+getorf:
+  min_nt: 60
+  max_nt: 450
+  find_mode: 2
+  reverse: "N"
+  genetic_code: 0
+
+annotate:
+  min_nt_len: 60
+  high_conf_min_nt: 120
+
+score:
+  top_n: 100
+  top_source: best_per_gene

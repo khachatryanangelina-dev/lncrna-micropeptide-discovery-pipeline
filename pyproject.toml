@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lncrna-micropeptides"
+version = "0.1.0"
+description = "Pipeline for identification, annotation and prioritization of lncRNA-derived micropeptide candidates in skeletal muscle."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+  { name = "Angelina Kh" }
+]
+dependencies = [
+  "pandas>=2.0",
+  "numpy>=1.24",
+  "pyyaml>=6.0"
+]
+
+# [project.scripts]
+# lncrna-mp = "lncrna_micropeptides.cli:main"
+[project.scripts]
+lncrna_micropeptides = "lncrna_micropeptides.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
