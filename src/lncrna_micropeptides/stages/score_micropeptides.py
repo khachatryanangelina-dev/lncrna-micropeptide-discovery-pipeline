@@ -24,11 +24,7 @@ import pandas as pd
 
 from lncrna_micropeptides.pipeline_config import get_nested, load_yaml_config, resolve_path
 
-
-# -----------------------------
 # Logging / small utilities
-# -----------------------------
-
 
 def log(msg: str, verbose: bool = True) -> None:
     if verbose:
@@ -116,11 +112,7 @@ def get_first_existing_col(df: pd.DataFrame, candidates: Iterable[str]) -> Optio
             return c
     return None
 
-
-# -----------------------------
 # Loading
-# -----------------------------
-
 
 def load_annotated_table(path: Path) -> pd.DataFrame:
     df = pd.read_csv(path, sep="\t", low_memory=False)
@@ -130,11 +122,7 @@ def load_annotated_table(path: Path) -> pd.DataFrame:
         raise ValueError(f"Input table lacks required columns: {sorted(missing)}")
     return df
 
-
-# -----------------------------
 # Score components
-# -----------------------------
-
 
 def add_qc_scores(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
@@ -504,7 +492,6 @@ def add_final_scores(df: pd.DataFrame) -> pd.DataFrame:
 
     df["score_percentile"] = df["integrated_micropeptide_score"].rank(pct=True, method="average")
 
-    # Confidence is score-based and intentionally conservative.
     conditions = [
         df["integrated_micropeptide_score"] >= 0.75,
         df["integrated_micropeptide_score"] >= 0.55,
@@ -512,7 +499,6 @@ def add_final_scores(df: pd.DataFrame) -> pd.DataFrame:
     choices = ["high", "medium"]
     df["score_confidence"] = np.select(conditions, choices, default="low")
 
-    # Useful stable ranking keys.
     sort_cols = [
         "integrated_micropeptide_score",
         "transcript_context_score",
@@ -540,11 +526,7 @@ def build_scores(df: pd.DataFrame) -> pd.DataFrame:
     df = add_final_scores(df)
     return df
 
-
-# -----------------------------
-# Outputs / summaries
-# -----------------------------
-
+# Outputs 
 
 def coalesce_first_nonempty(df: pd.DataFrame, candidates: list[str]) -> pd.Series:
     """Return first non-empty value across candidate columns for each row."""
@@ -604,8 +586,6 @@ def make_top_tables(df: pd.DataFrame, top_n: int, top_source: str) -> dict[str, 
     tables["best_per_transcript"] = per_tx
     tables["top_best_per_transcript"] = per_tx.head(min(top_n, len(per_tx))).copy()
 
-    # One best candidate per gene, then top N genes. This avoids over-representing
-    # genes with many transcript isoforms in the final biological candidate list.
     if "gene_level_key" in df.columns:
         per_gene = df.drop_duplicates("gene_level_key", keep="first").copy()
     else:
@@ -747,10 +727,7 @@ def save_outputs(df: pd.DataFrame, output_dir: Path, top_n: int, top_source: str
     log(f"Saved summary: {summary_path}", verbose)
 
 
-# -----------------------------
 # CLI / config
-# -----------------------------
-
 
 def apply_config_defaults(args: argparse.Namespace) -> argparse.Namespace:
     cfg = load_yaml_config(args.config)
